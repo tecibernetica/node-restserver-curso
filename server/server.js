@@ -1,44 +1,45 @@
 require('./config/config');
 
 const express = require('express');
+const mongoose = require('mongoose');
+
+
 const app = express();
 
 const bodyParser = require('body-parser');
 
+
+
+
+
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
-app.get('/usuario',  (req, res) => {
-  res.json('getUsuario')
-})
 
-app.post('/usuario',  (req, res) => {
-    let body = req.body;
-     
+app.use( require('./routes/usuario'));
 
-    res.json({
-      persona:body
-    });
-  })
 
-app.put('/usuario/:id',  (req, res) => {
-  
-  let id = req.params.id;
 
-  res.json({
-    id
-  });
 
-  
+mongoose.connect(process.env.URLDB,(err,res)=>{
+    if (err) throw err;
+    console.log('Base de Datos ONLINE')
 });
 
-app.delete('/usuario',  (req, res) => {
-    res.json('deleteUsuario')
-  });
+
+/*
+
+mongodb+srv://jccabrera:julio1989@cluster0.wutyi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+
+
+*/
+
+
 
 app.listen(process.env.PORT,()=>{
     console.log('Escuchando puerto: ', process.env.PORT)
 });
+
