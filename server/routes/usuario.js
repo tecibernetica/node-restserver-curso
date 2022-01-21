@@ -4,7 +4,8 @@ const bcrypt =  require('bcrypt');
 const _ = require('underscore');
 
 const Usuario =  require('../models/usuario');
-const usuario = require('../models/usuario');
+const { verificaToken, verificaAdminRole} = require('../middlewares/autenticacion');
+
 
 
 
@@ -12,7 +13,7 @@ const app = express();
 
 
 
-app.get('/usuario',  (req, res) => {
+app.get('/usuario',verificaToken,  (req, res) => {
   //para paginar la sentencia sse pone limit y para ver los proximos se pone la cantidad  
 
    let desde = req.query.desde || 0;
@@ -57,13 +58,13 @@ app.get('/usuario',  (req, res) => {
   });
 
   
-app.post('/usuario',  (req, res) => {
+app.post('/usuario', [verificaToken,verificaAdminRole],  (req, res) => {
     let body = req.body;
 
     let usuario = new Usuario({
         nombre: body.nombre,
         email: body.email,
-        password: bcrypt.hashSync(body.password,10) ,
+        password: bcrypt.hashSync(body.password,10),
         role: body.role
     });
 
@@ -88,7 +89,7 @@ app.post('/usuario',  (req, res) => {
      
 });
   
-app.put('/usuario/:id',  (req, res) => {
+app.put('/usuario/:id', [verificaToken,verificaAdminRole], (req, res) => {
   
   let id = req.params.id;
   let body = _.pick(req.body,['nombre','email','role','estado']);
@@ -122,7 +123,7 @@ app.put('/usuario/:id',  (req, res) => {
   
 });
 
-app.delete('/usuario/:id', function (req, res) {
+app.delete('/usuario/:id',[verificaToken,verificaAdminRole], function (req, res) {
      
   let id = req.params.id;
 
